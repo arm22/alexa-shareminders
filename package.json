@@ -1,0 +1,19 @@
+{
+  "name": "alexa-shareminders",
+  "version": "1.0.0",
+  "description": "Amazon Alexa Skill Shareminders",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arm22/alexa-shareminders.git"
+  },
+  "author": "Austin Meyers",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arm22/alexa-shareminders/issues"
+  },
+  "homepage": "https://github.com/arm22/alexa-shareminders#readme"
+}
