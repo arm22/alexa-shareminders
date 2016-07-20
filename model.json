@@ -1,0 +1,59 @@
+{
+  "intents": [
+    {
+      "intent": "AddUser",
+      "slots": [
+        {
+          "Name": "AMAZON.US_FIRST_NAME"
+        }
+      ],
+      "templates": [
+        "{add} {-|Name} to my {home|account|list}"
+      ]
+    },
+    {
+      "intent": "AddReminder",
+      "slots": [
+        {
+          "Name": "AMAZON.US_FIRST_NAME"
+        },
+        {
+          "Reminder": "AMAZON.LITERAL"
+        }
+      ],
+      "templates": [
+        "remind {-|Name} to {-|Reminder}"
+      ]
+    },
+    {
+      "intent": "CompleteReminder",
+      "slots": [
+        {
+          "Reminder": "AMAZON.LITERAL"
+        }
+      ],
+      "templates": [
+        "mark {-|Reminder} as complete"
+      ]
+    },
+    {
+      "intent": "ListReminders",
+      "slots": [
+        {
+          "Name": "AMAZON.US_FIRST_NAME"
+        }
+      ],
+      "templates": [
+        "list {-|Name}'s reminders"
+      ]
+    }
+  ],
+  "custom_slots": [
+    {
+      "LIST_OF_FLAVORS": ["Cherry", "Banana", "Apple", "Orange", "Grape"]
+    },
+    {
+      "LIST_OF_SIZES": ["Personal", "Small", "Medium", "Large", "Family"]
+    }
+  ]
+}
