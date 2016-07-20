@@ -46,6 +46,28 @@
       "templates": [
         "list {-|Name}'s reminders"
       ]
+    },
+    {
+      "intent": "FakeFlavor",
+      "slots": [
+        {
+          "Flavor": "LIST_OF_FLAVORS"
+        }
+      ],
+      "templates": [
+        "my favorite is {-|Flavor}"
+      ]
+    },
+    {
+      "intent": "FakeSize",
+      "slots": [
+        {
+          "Size": "LIST_OF_SIZES"
+        }
+      ],
+      "templates": [
+        "make it {-|Size} sized"
+      ]
     }
   ],
   "custom_slots": [
