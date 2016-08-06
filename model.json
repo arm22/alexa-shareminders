@@ -2,80 +2,48 @@
   "intents": [
     {
       "intent": "AddUser",
-      "slots": [
-        {
-          "Name": "AMAZON.US_FIRST_NAME"
-        }
-      ],
+      "slots": {
+          "Name": "US_FIRST_NAME"
+      },
       "templates": [
-        "{add} {-|Name} to my {home|account|list}"
+        "add {-|Name} to my {home|account|list|household}",
+        "put {-|Name} {in|on} my {home|account|list|household}",
+        "create {-|Name} {on|under|in} my {home|account|list|household}"
       ]
     },
     {
       "intent": "AddReminder",
-      "slots": [
-        {
-          "Name": "AMAZON.US_FIRST_NAME"
-        },
-        {
-          "Reminder": "AMAZON.LITERAL"
-        }
-      ],
+      "slots": {
+          "Name": "US_FIRST_NAME",
+          "Reminder": "LITERAL"
+      },
+      "dictionary": { "reminders": ["eat", "call home", "feed the cat", "take out the trash"] },
       "templates": [
-        "remind {-|Name} to {-|Reminder}"
+        "remind {-|Name} to {reminders|Reminder}",
+        "add {reminders|Reminder} to {-|Name} {list|reminders|to-do list}",
+        "put {reminders|Reminder} {on|in} {-|Name} {list|reminders|to-do list}"
       ]
     },
     {
       "intent": "CompleteReminder",
-      "slots": [
-        {
-          "Reminder": "AMAZON.LITERAL"
-        }
-      ],
+      "slots": {
+          "Reminder": "LITERAL"
+      },
       "templates": [
-        "mark {-|Reminder} as complete"
+        "mark {-|Reminder} as complete",
+        "{erase|delete|remove} {-|Reminder}"
       ]
     },
     {
       "intent": "ListReminders",
-      "slots": [
-        {
-          "Name": "AMAZON.US_FIRST_NAME"
-        }
-      ],
+      "slots":{
+          "Name": "US_FIRST_NAME"
+      },
       "templates": [
-        "list {-|Name}'s reminders"
-      ]
-    },
-    {
-      "intent": "FakeFlavor",
-      "slots": [
-        {
-          "Flavor": "LIST_OF_FLAVORS"
-        }
-      ],
-      "templates": [
-        "my favorite is {-|Flavor}"
-      ]
-    },
-    {
-      "intent": "FakeSize",
-      "slots": [
-        {
-          "Size": "LIST_OF_SIZES"
-        }
-      ],
-      "templates": [
-        "make it {-|Size} sized"
+        "{list|read|recite|tell|tell me|what are|} {-|Name} reminders"
       ]
     }
   ],
   "custom_slots": [
-    {
-      "LIST_OF_FLAVORS": ["Cherry", "Banana", "Apple", "Orange", "Grape"]
-    },
-    {
-      "LIST_OF_SIZES": ["Personal", "Small", "Medium", "Large", "Family"]
-    }
   ]
 }
