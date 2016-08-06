@@ -18,11 +18,13 @@ module.exports = function(model) {
   for (var intent of intents) {
     var name = intent.intent;
     var templates = intent.templates;
+    var dictionary = intent.dictionary;
+    //utterances.sample_utterances = utterances.sample_utterances.concat(alexautterances(intent.templates[1], intent.slots, intent.dictionary, true));
 
     //Build and add permutations of utterances
-    for (var template of templates) {
-      utterances.sample_utterances = utterances.sample_utterances.concat(alexautterances(name + " " + template))
-    }
+    templates.forEach(function (value, i) {
+      utterances.sample_utterances = utterances.sample_utterances.concat(alexautterances(name + " " + value, intent.slots, intent.dictionary, true));
+    });
   }
 
   //Return utterances object

@@ -23,9 +23,9 @@ module.exports = function(model) {
       sample_intent.slots = [];
 
       //Loop through all slots
-      for (var slot of intent.slots) {
-        var name = Object.keys(slot)[0];
-        var type = slot[name];
+      for (var slot in intent.slots) {
+        var name = slot;
+        var type = "AMAZON." + intent.slots[slot];
 
         //Build and add slots to intent
         sample_intent.slots.push({"name": name, "type": type});
