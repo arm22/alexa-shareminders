@@ -1,5 +1,5 @@
 const express = require('express');
-const alexa = require('alexa-app');
+const alexa_app = require('alexa-app');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost:27017/shareminder');
@@ -16,7 +16,7 @@ var PORT = process.env.port || 8080;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var alexa = new alexa.app('shareminder');
+var alexa = new alexa_app.app('shareminder');
 
 alexa.launch(function(request,response) {
   //Get the amazon ID, primary DB key
