@@ -16,7 +16,7 @@ var PORT = process.env.port || 8080;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const alexa = new alexa.app('shareminder');
+var alexa = new alexa.app('shareminder');
 
 alexa.launch(function(request,response) {
   //Get the amazon ID, primary DB key
