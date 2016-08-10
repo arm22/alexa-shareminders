@@ -1,4 +1,5 @@
 const express = require('express');
+const fs = require('fs');
 const alexa_app = require('alexa-app');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -7,12 +8,11 @@ const Head = require('./models/schema');
 const app = express();
 const https = require('https');
 const options = {
-  ca: fs.readFileSync('ssl/www_slack-riddle_xyz.ca-bundle'),
-  key: fs.readFileSync('ssl/private-key.key'),
-  cert: fs.readFileSync('ssl/www_slack-riddle_xyz.crt')
+  ca: fs.readFileSync('../ssl/www_slack-riddle_xyz.ca-bundle'),
+  key: fs.readFileSync('../ssl/private-key.key'),
+  cert: fs.readFileSync('../ssl/www_slack-riddle_xyz.crt')
 }
 
-var PORT = process.env.port || 8080;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -20,26 +20,50 @@ var alexa = new alexa_app.app('shareminder');
 
 alexa.launch(function(request,response) {
   //Get the amazon ID, primary DB key
-  console.log(request.data.session.user.userId);
-  var admin = new Head({amazon_id: request.data.session.user.userId, housemates: [{name:"austin"}, {name:"candace"},{name:"nick"}]});
-  admin.save(function(err) {
-    if(err) return console.error(err);
-  });
-  // if (ID in database) {
-  //   response.say("Welcome back!");
-  // } else {
-  //   add id to db
-  //   reprompt for name
-
-  // }
-  response.say("You launched the app!");
+  var id = request.data.session.user.userId;
+  Head.findOne(
+      {amazon_id: id},
+      function(err, account) {
+        if(err) console.error(err);
+        if(account) {
+          response.say("Welcome back!");
+          response.send();
+        } else {
+          var account = new Head({amazon_id: id});
+          account.save(function(err) {
+            if(err) return console.error(err);
+          });
+          response.say("Welcome, I have created you a new account. Add your name and your housemates names by simply saying add Alexa to my account.");
+          response.send();
+        }
+      }
+  );
+  return false;
 });
 
+alexa.intent("AddUser",
+  function(request, response) {
+    var name = request.slot("Name").toLowerCase();
+    var id = request.data.session.user.userId;
+    Head.findOne(
+      {amazon_id: id},
+      function(err, account) {
+        if(err) console.error(err);
+        account.housemates.push({name: name});
+        account.save(function(err) {
+          if(err) console.log(err);
+        });
+        response.say("I've added " + name + " to your account.");
+        response.send();
+      });
+    return false;
+  }
+);
 
 alexa.intent("AddReminder",
   function(request, response) {
     var reminder = request.slot("Reminder");
-    var name = request.slot("Name");
+    var name = request.slot("Name").toLowerCase();
     var id = request.data.session.user.userId;
     Head.findOne(
       {amazon_id: id},
@@ -63,7 +87,7 @@ alexa.intent("AddReminder",
 
 alexa.intent("ListReminders",
   function(request, response) {
-    var name = request.slot("Name");
+    var name = request.slot("Name").toLowerCase();
     var id = request.data.session.user.userId;
     Head.findOne(
       {amazon_id: id}, 
@@ -76,6 +100,7 @@ alexa.intent("ListReminders",
             if(!curr_user.reminders || curr_user.reminders.length == 0) {
               response.say("You have no reminders, way to go!");
             } else {
+              response.say("Here are " + name + " reminders.");
               for(var j = 0; j < curr_user.reminders.length; j++) {
                 response.say(curr_user.reminders[j] + ".");
               }
@@ -88,6 +113,5 @@ alexa.intent("ListReminders",
   }
 );
 
-
-alexa.express(app, "/");
 https.createServer(options, app).listen(443)
+alexa.express(app, "/");
