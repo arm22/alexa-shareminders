@@ -4,7 +4,7 @@ const alexa_app = require('alexa-app');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost:27017/shareminder');
-const Head = require('./models/schema');
+const Head = require('./models/model');
 const app = express();
 const https = require('https');
 const options = {
