@@ -17,11 +17,11 @@
           "Name": "US_FIRST_NAME",
           "Reminder": "LITERAL"
       },
-      "dictionary": { "reminders": ["eat", "call home", "feed the cat", "take out the trash"] },
+      "dictionary": { "rem": ["eat", "exercise", "unload dishes", "call home", "feed the cat", "pay the bills", "take out the trash", "scoop the cat litter"] },
       "templates": [
-        "remind {-|Name} to {reminders|Reminder}",
-        "add {reminders|Reminder} to {-|Name} {list|reminders|to-do list}",
-        "put {reminders|Reminder} {on|in} {-|Name} {list|reminders|to-do list}"
+        "remind {-|Name} to {rem|Reminder}",
+        "add {rem|Reminder} to {-|Name} {list|reminders|to-do list}",
+        "put {rem|Reminder} {on|in} {-|Name} {list|reminders|to-do list}"
       ]
     },
     {
@@ -40,7 +40,9 @@
           "Name": "US_FIRST_NAME"
       },
       "templates": [
-        "{list|read|recite|tell|tell me|what are|} {-|Name} reminders"
+        "{list|read|recite|tell} {-|Name} {reminders|list|to-dos|to-do list|tasks}",
+        "{-|Name} {list|reminders|to-do|to-do list|tasks}",
+        "{what are|whats} the reminders for {-|Name}"
       ]
     }
   ],
