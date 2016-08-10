@@ -1,34 +1,87 @@
-// Start up the server
 var express = require('express');
 var alexa = require('alexa-app');
 var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost:27017/shareminder');
+var Head = require('./models/schema');
 
 var app = express();
 var PORT = process.env.port || 8080;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-//app.set('view engine','ejs');
 
-var alexaApp = new alexa.app('shareminder');
-alexaApp.launch(function(request,response) {
+var alexa = new alexa.app('shareminder');
+
+alexa.launch(function(request,response) {
+  //Get the amazon ID, primary DB key
+  console.log(request.data.session.user.userId);
+  var admin = new Head({amazon_id: request.data.session.user.userId, housemates: [{name:"austin"}, {name:"candace"},{name:"nick"}]});
+  admin.save(function(err) {
+    if(err) return console.error(err);
+  });
+  // if (ID in database) {
+  //   response.say("Welcome back!");
+  // } else {
+  //   add id to db
+  //   reprompt for name
+
+  // }
   response.say("You launched the app!");
 });
-alexaApp.dictionary = {"names":["matt","joe","bob","bill","mary","jane","dawn"]};
-alexaApp.intent("AddReminder",
-  {
-    "slots":{"NAME":"LITERAL"}
-    ,"utterances": [
-      "my {name is|name's} {names|NAME}"
-      ,"set my name to {names|NAME}"
-    ]
-  },
-  function(request,response) {
-    response.say("Success!");
+
+
+alexa.intent("AddReminder",
+  function(request, response) {
+    var reminder = request.slot("Reminder");
+    var name = request.slot("Name");
+    var id = request.data.session.user.userId;
+    Head.findOne(
+      {amazon_id: id},
+      function(err, account) {
+        if(err) console.error(err);
+        for(var i = 0; i < account.housemates.length; i++) {
+          var db_name = account.housemates[i].name;
+          if(name === db_name || name == db_name || name.indexOf(db_name) !== -1) {
+            account.housemates[i].reminders.push(reminder);
+            account.save(function(err) {
+              if(err) console.log(err);
+            });
+            response.say("I've reminded " + db_name + " to " + reminder + ".");
+            response.send();
+          }
+        }
+      });
+    return false;
   }
 );
-alexaApp.express(app, "/");
 
-// Launch /echo/test in your browser with a GET request!
+alexa.intent("ListReminders",
+  function(request, response) {
+    var name = request.slot("Name");
+    var id = request.data.session.user.userId;
+    Head.findOne(
+      {amazon_id: id}, 
+      function(err, account) { 
+        if(err) console.error(err);
+        for(var i = 0; i < account.housemates.length; i++) {
+          var db_name = account.housemates[i].name;
+          if(name === db_name || name == db_name || name.indexOf(db_name) !== -1) {
+            var curr_user = account.housemates[i];
+            if(!curr_user.reminders || curr_user.reminders.length == 0) {
+              response.say("You have no reminders, way to go!");
+            } else {
+              for(var j = 0; j < curr_user.reminders.length; j++) {
+                response.say(curr_user.reminders[j] + ".");
+              }
+            }
+          }
+        }
+        response.send();
+      });
+    return false;
+  }
+);
 
+
+alexa.express(app, "/");
 app.listen(PORT);
-console.log("Listening on port "+PORT);
