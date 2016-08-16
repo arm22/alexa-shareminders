@@ -100,7 +100,7 @@ alexa.intent("ListReminders",
             if(!curr_user.reminders || curr_user.reminders.length == 0) {
               response.say("You have no reminders, way to go!");
             } else {
-              response.say("Here are " + name + " reminders.");
+              response.say("Here are " + name + " reminders:");
               for(var j = 0; j < curr_user.reminders.length; j++) {
                 response.say(curr_user.reminders[j] + ".");
               }
