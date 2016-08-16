@@ -18,28 +18,36 @@ app.use(bodyParser.json());
 
 var alexa = new alexa_app.app('shareminder');
 
-alexa.launch(function(request,response) {
-  //Get the amazon ID, primary DB key
-  var id = request.data.session.user.userId;
-  Head.findOne(
-      {amazon_id: id},
-      function(err, account) {
-        if(err) console.error(err);
-        if(account) {
-          response.say("Welcome back!");
-          response.send();
-        } else {
-          var account = new Head({amazon_id: id});
-          account.save(function(err) {
-            if(err) return console.error(err);
-          });
-          response.say("Welcome, I have created you a new account. Add your name and your housemates names by simply saying add Alexa to my account.");
-          response.send();
+alexa.launch(
+  function(request, response) {
+    var id = request.data.session.user.userId;
+    Head.findOne(
+        {amazon_id: id},
+        function(err, account) {
+          if(err) console.error(err);
+          if(account) {
+            response.say("Welcome back!");
+            response.send();
+          } else {
+            var account = new Head({amazon_id: id});
+            account.save(function(err) {
+              if(err) return console.error(err);
+            });
+            response.say("Welcome, I have created you a new account. Add your name and your housemates names by simply saying add Alexa to my account.");
+            response.send();
+          }
         }
-      }
-  );
-  return false;
-});
+    );
+    return false;
+  }
+);
+
+alexa.sessionEnded(
+  function(request, response) {
+    response.clear();
+    response.clearSession();
+  }
+);
 
 alexa.intent("AddUser",
   function(request, response) {
@@ -53,8 +61,7 @@ alexa.intent("AddUser",
         account.save(function(err) {
           if(err) console.log(err);
         });
-        response.say("I've added " + name + " to your account.");
-        response.send();
+        response.say("I've added " + name + " to your account.").shouldEndSession(false).send();
       });
     return false;
   }
@@ -76,8 +83,7 @@ alexa.intent("AddReminder",
             account.save(function(err) {
               if(err) console.log(err);
             });
-            response.say("I've reminded " + db_name + " to " + reminder + ".");
-            response.send();
+            response.say("I've reminded " + db_name + " to " + reminder + ".").shouldEndSession(false).send();
           }
         }
       });
@@ -107,7 +113,7 @@ alexa.intent("ListReminders",
             }
           }
         }
-        response.send();
+        response.shouldEndSession(false).send();
       });
     return false;
   }
