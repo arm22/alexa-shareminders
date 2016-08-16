@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 
 var userSchema = new Schema({
-  name: String,
+  name: { type: String, unique: true },
   reminders: Array
 });
 
