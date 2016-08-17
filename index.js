@@ -26,15 +26,10 @@ alexa.launch(
         function(err, account) {
           if(err) console.error(err);
           if(account) {
-            response.say("Welcome back!");
-            response.send();
+            response.say("Welcome back!").shouldEndSession(false).send();
           } else {
-            var account = new Head({amazon_id: id});
-            account.save(function(err) {
-              if(err) return console.error(err);
-            });
-            response.say("Welcome, I have created you a new account. Add your name and your housemates names by simply saying add Alexa to my account.");
-            response.send();
+            createAccount(id);
+            response.say("Welcome, I have created you a new account. Add your name and your housemates names by simply saying add Alexa to my account.").shouldEndSession(false).send();
           }
         }
     );
@@ -57,6 +52,14 @@ alexa.intent("AddUser",
       {amazon_id: id},
       function(err, account) {
         if(err) console.error(err);
+        if(!account) createAccount(id);
+        var housemates = account.housemates;
+        for(var i = 0; i < account.housemates.length; i++) {
+          var db_name = accout.housemates[i].name;
+          if(name === db_name || name == db_name || name.indexOf(db_name) !== -1) {
+            response.say("Cannot add duplicate " + name + " to your account." ).shouldEndSession(false).send();
+          }
+        }
         account.housemates.push({name: name});
         account.save(function(err) {
           if(err) console.log(err);
@@ -76,6 +79,7 @@ alexa.intent("AddReminder",
       {amazon_id: id},
       function(err, account) {
         if(err) console.error(err);
+        if(!account) createAccount(id);
         for(var i = 0; i < account.housemates.length; i++) {
           var db_name = account.housemates[i].name;
           if(name === db_name || name == db_name || name.indexOf(db_name) !== -1) {
@@ -99,6 +103,7 @@ alexa.intent("ListReminders",
       {amazon_id: id}, 
       function(err, account) { 
         if(err) console.error(err);
+        if(!account) createAccount(id);
         for(var i = 0; i < account.housemates.length; i++) {
           var db_name = account.housemates[i].name;
           if(name === db_name || name == db_name || name.indexOf(db_name) !== -1) {
@@ -118,6 +123,13 @@ alexa.intent("ListReminders",
     return false;
   }
 );
+
+function createAccount(id) {
+  var account = new Head({amazon_id: id});
+  account.save(function(err) {
+    if(err) return console.error(err);
+  });
+};
 
 https.createServer(options, app).listen(443)
 alexa.express(app, "/");
