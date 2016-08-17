@@ -27,11 +27,13 @@
     {
       "intent": "CompleteReminder",
       "slots": {
+          "Name": "US_FIRST_NAME",
           "Reminder": "LITERAL"
       },
+      "dictionary": { "rem": ["eat", "exercise", "unload dishes", "call home", "feed the cat", "pay the bills", "take out the trash", "scoop the cat litter"] },
       "templates": [
-        "mark {-|Reminder} as complete",
-        "{erase|delete|remove} {-|Reminder}"
+        "mark {-|Name} {rem|Reminder} {complete|done|finished}",
+        "{complete|finish|delete|remove} {-|Name} {rem|Reminder}"
       ]
     },
     {
