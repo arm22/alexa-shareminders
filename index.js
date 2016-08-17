@@ -55,7 +55,7 @@ alexa.intent("AddUser",
         if(!account) createAccount(id);
         var housemates = account.housemates;
         for(var i = 0; i < account.housemates.length; i++) {
-          var db_name = accout.housemates[i].name;
+          var db_name = account.housemates[i].name;
           if(name === db_name || name == db_name || name.indexOf(db_name) !== -1) {
             response.say("Cannot add duplicate " + name + " to your account." ).shouldEndSession(false).send();
           }
@@ -88,6 +88,38 @@ alexa.intent("AddReminder",
               if(err) console.log(err);
             });
             response.say("I've reminded " + db_name + " to " + reminder + ".").shouldEndSession(false).send();
+          }
+        }
+      });
+    return false;
+  }
+);
+
+alexa.intent("CompleteReminder",
+  function(request, response) {
+    var reminder = request.slot("Reminder");
+    var name = request.slot("Name").toLowerCase();
+    var id = request.data.session.user.userId;
+    Head.findOne(
+      {amazon_id: id},
+      function(err, account) {
+        if(err) console.error(err);
+        if(!account) createAccount(id);
+        for(var i = 0; i < account.housemates.length; i++) {
+          var db_name = account.housemates[i].name;
+          if(name === db_name || name == db_name || name.indexOf(db_name) !== -1) {
+            var rem_list = account.housemates[i].reminders;
+            var index = rem_list.indexOf(reminder);
+            if(index > -1) {
+              rem_list.splice(index, 1);
+              account.housemates[i].reminders = rem_list;
+              account.save(function(err) {
+                if(err) console.log(err);
+              });
+              response.say("I've removed " + reminder + " from " + name + "'s list.").shouldEndSession(false).send();
+            } else {
+              response.say("Sorry, I can't find " + reminder + " in " + name + "'s list.").shouldEndSession(false).send();
+            }
           }
         }
       });
